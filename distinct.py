@@ -68,10 +68,13 @@ def main():
 		exit(1)
 	print("user %s id %d" % ( default['follow_user'], user.id))
 	global seen_urls
-	seen_urls = default['url_cache']
+	seen_urls = shelve.open(filename=default['url_cache'], writeback=True)
 	global session
 	session = requests.Session()  # so connections are recycled
 	stream.filter(follow=[user.id_str])
+	# not reached
+	print("stream is done")
+	seen_urls.close()
 
 
 def handle_tweet(tweet):
