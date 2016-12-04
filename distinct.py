@@ -30,6 +30,8 @@ import re
 import time
 import requests
 import random
+import sys
+import codecs
 
 class StdOutListener(StreamListener):
 
@@ -50,8 +52,12 @@ session = None
 seen_urls = None
 
 def main():
+	sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
 	config = configparser.ConfigParser()
-	config.read('distinct.ini')
+	if len(sys.argv) == 2: # alternate config file
+		config.read(sys.argv[1],encoding='utf8')
+	else:
+		config.read('distinct.ini',encoding='utf8')
 	global default
 	default = config['DEFAULT']
 	l = StdOutListener()
@@ -61,6 +67,7 @@ def main():
 	api = tweepy.API(auth)
 	stream = Stream(auth, l)
 
+	print("follow_user = >%s<" % default['follow_user'])
 	global user
 	user = api.get_user(default['follow_user'])
 	if not user:
@@ -68,7 +75,9 @@ def main():
 		exit(1)
 	print("user %s id %d" % ( default['follow_user'], user.id))
 	global seen_urls
-	seen_urls = shelve.open(filename=default['url_cache'], writeback=True)
+	seen_urls = shelve.open(
+		filename='urlcache.' + default['follow_user'] + '.db',
+		writeback=True)
 	global session
 	session = requests.Session()  # so connections are recycled
 	stream.filter(follow=[user.id_str])
@@ -82,41 +91,38 @@ def handle_tweet(tweet):
 	global seen_urls
 	global default
 	# make sure it's not a retweet
-	if tweet['user']['id_str'] == user.id_str:
-		#if tweet['entities']['urls'][0]['expanded_url']:
-		urlmatch = re.search("(?P<url>https?://[^\s]+)", tweet['text'])
-		if urlmatch:
-			if default.getboolean('unshorten_url'):
-				# unshortening URLs has privacy implications
-				shorturl = urlmatch.group("url")
-				#shorturl = tweet['entities']['urls'][0]['expanded_url']
-				resp = session.head(shorturl, allow_redirects=True)
-				url = resp.url
-				print("short URL = %s URL = %s" % (shorturl, url))
-			else:
-				url = urlmatch.group("url")
-			purge_old_urls()
-			cache = seen_urls.get(url)
-			if not cache:
-				# remember
-				seen_urls[url] = int(time.time())
-				if default.getboolean('unshorten_url'):
-					seen_urls[shorturl] = int(time.time())
-				seen_urls.sync()
-				# retweet
-				#api.retweet(tweet['id'])
-				print("tweet with new URL")
-		else:
-			print("tweet without URL")
-			#api.retweet(tweet['id'])
-	else:
+	if tweet['user']['id_str'] != user.id_str:
 		print("ignoring retweet/response")
+		return
+	#if tweet['entities']['urls'][0]['expanded_url']:
+	urlmatch = re.search("(?P<url>https?://[^\s]+)", tweet['text'])
+	if not urlmatch:
+		print("tweet without URL")
+		return
+	purge_old_urls()
+	url = urlmatch.group("url")
+	shorturl = None
+	if default.getboolean('unshorten_url'):
+		shorturl = url
+		url = unshorten_url(shorturl)
+	cache = seen_urls.get(url)
+	if not cache:
+		# remember
+		seen_urls[url] = int(time.time())
+		print("new url %s" % url)
+		if shorturl is not None:
+			seen_urls[shorturl] = int(time.time())
+			print("new short url %s" % shorturl)
+		seen_urls.sync()
+		# retweet
+		#api.retweet(tweet['id'])
+		print("tweet with new URL")
 
 def purge_old_urls():
 	# only every nth tweet, purge old URLs in the cache
 	global default
 	if random.random() >= (1 / int(default['url_purge_check'])):
-		return;
+		return
 	time_now = int(time.time())
 	delcount = 0
 	global seen_urls
@@ -125,6 +131,10 @@ def purge_old_urls():
 			del seen_urls[url]
 			delcount += 1
 	print("deleted %d URLs from cache" % delcount)
+
+def unshorten_url(shorturl):
+	# unshortening URLs has privacy implications
+	return session.head(shorturl, allow_redirects=True).url
 
 main()
 

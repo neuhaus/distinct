@@ -19,9 +19,6 @@ unshorten_url = yes
 ; 30 days = 30*24*60*60 = 2592000
 url_expiration = 2592000
 
-; cache filename (with path, if not in current directory)
-url_cache = urls.db
-
 ; on average, search for old URLs in the cache every X tweets 
 ; must be between 1 and bignum
 url_purge_check = 20

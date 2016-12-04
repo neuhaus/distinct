@@ -24,6 +24,8 @@ from tweepy import OAuthHandler
 import tweepy
 import shelve
 import requests
+import sys
+import codecs
 
 user = None
 api = None
@@ -31,33 +33,46 @@ session = None
 
 
 def cache_tweet_urls(cache_filename):
+	tweets = 0
+	tweet_duplicate_url = 0
+	tweet_nourl = 0
 	""" Stores URLs found in past tweets in the cache """
 	seen_urls = shelve.open(filename=cache_filename, writeback=True)
 	statuses = api.user_timeline(id=user.id_str, count=10, include_rts=False)
 	for tweet in statuses:
+		print ("tweet = %s" % tweet)
+		tweets += 1
 		print("created at epoch %d" % int(tweet.created_at.timestamp()))
 		if not tweet.entities.get("urls"):
+			tweet_nourl += 1
 			continue
 		for urldata in tweet.entities['urls']:
 			if seen_urls.get(urldata['expanded_url']):
 				print("url already seen %s" % urldata['expanded_url'])
+				tweet_duplicate_url += 1
 				continue
 			seen_urls[urldata['expanded_url']] = int(tweet.created_at.timestamp())
 			redirected_url = session.head(
 				urldata['expanded_url'], allow_redirects=True).url
 			if seen_urls.get(redirected_url):
 				print("redirected_url already seen %s" % urldata['expanded_url'])
+				tweet_duplicate_url += 1
 				continue
 			seen_urls[redirected_url] = int(tweet.created_at.timestamp())
 			print("expanded url %s and\nredirected url %s" %
 				(urldata['expanded_url'], redirected_url))
 	seen_urls.sync()
 	seen_urls.close()
+	print("%d tweets %d duplicate URLs %d without URL" % ( tweets, tweet_duplicate_url, tweet_nourl))
 
 
 def main():
+	sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
 	config = configparser.ConfigParser()
-	config.read('distinct.ini')
+	if len(sys.argv) == 2: # alternate config file
+		config.read(sys.argv[1],encoding='utf8')
+	else:
+		config.read('distinct.ini',encoding='utf8')
 	default = config['DEFAULT']
 	auth = OAuthHandler(default['consumer_key'], default['consumer_secret'])
 	auth.set_access_token(default['access_token'], default['access_token_secret'])
@@ -68,7 +83,7 @@ def main():
 	print("user " + default['follow_user'] + " id_str " + user.id_str)
 	global session
 	session = requests.Session()  # so connections are recycled
-	cache_tweet_urls(default['url_cache'])
+	cache_tweet_urls('urlcache.' + default['follow_user'] + '.db') # e.g. "urlcache.wired.db"
 
 
 main()
