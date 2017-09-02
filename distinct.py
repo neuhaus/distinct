@@ -67,13 +67,13 @@ def main():
 	api = tweepy.API(auth)
 	stream = Stream(auth, l)
 
-	print("follow_user = >%s<" % default['follow_user'])
+	# print("follow_user = >%s<" % default['follow_user'])
 	global user
 	user = api.get_user(default['follow_user'])
 	if not user:
 		print("Unknown user %s" % default['follow_user'])
 		exit(1)
-	print("user %s id %d" % ( default['follow_user'], user.id))
+	print("user '%s id %d" % ( default['follow_user'], user.id))
 	global seen_urls
 	seen_urls = shelve.open(
 		filename='urlcache.' + default['follow_user'] + '.db',
@@ -87,24 +87,29 @@ def main():
 
 
 def handle_tweet(tweet):
-	print("%s tweet = %s " % ( tweet.get('created_at', 'unknown'), tweet['text'] ))
 	global seen_urls
 	global default
 	# make sure it's not a retweet
 	if tweet['user']['id_str'] != user.id_str:
-		print("ignoring retweet/response")
+		print("ignoring retweet/response at %s" % tweet.get('created_at', 'unknown'))
 		return
+	print("%s tweet = %s " % ( tweet.get('created_at', 'unknown'), tweet['text'] ))
 	#if tweet['entities']['urls'][0]['expanded_url']:
 	urlmatch = re.search("(?P<url>https?://[^\s]+)", tweet['text'])
 	if not urlmatch:
-		print("tweet without URL")
+		api.retweet(tweet['id'])
+		print("tweet without URL retweeted")
 		return
 	purge_old_urls()
 	url = urlmatch.group("url")
 	shorturl = None
 	if default.getboolean('unshorten_url'):
 		shorturl = url
-		url = unshorten_url(shorturl)
+		try:
+			url = unshorten_url(shorturl)
+		except (UnicodeError, IndexError, InvalidURL):
+			print("error during unshorten url")
+			shorturl = None
 	cache = seen_urls.get(url)
 	if not cache:
 		# remember
@@ -115,8 +120,10 @@ def handle_tweet(tweet):
 			print("new short url %s" % shorturl)
 		seen_urls.sync()
 		# retweet
-		#api.retweet(tweet['id'])
+		api.retweet(tweet['id'])
 		print("tweet with new URL")
+	else:
+		print("skipping tweet with old URL")
 
 def purge_old_urls():
 	# only every nth tweet, purge old URLs in the cache
@@ -127,7 +134,7 @@ def purge_old_urls():
 	delcount = 0
 	global seen_urls
 	for url in seen_urls.keys():
-		if (time_now - seen_urls[url] > default['url_expiration']):
+		if (time_now - seen_urls[url] > int(default['url_expiration'])):
 			del seen_urls[url]
 			delcount += 1
 	print("deleted %d URLs from cache" % delcount)
