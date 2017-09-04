@@ -80,7 +80,12 @@ def main():
 		writeback=True)
 	global session
 	session = requests.Session()  # so connections are recycled
-	stream.filter(follow=[user.id_str])
+	while(True):
+		try:
+			stream.filter(follow=[user.id_str])
+		except (ConnectionResetError):
+			print("error during stream.filter")
+		time.sleep(5)
 	# not reached
 	print("stream is done")
 	seen_urls.close()
@@ -107,7 +112,7 @@ def handle_tweet(tweet):
 		shorturl = url
 		try:
 			url = unshorten_url(shorturl)
-		except (UnicodeError, IndexError, InvalidURL):
+		except (UnicodeError, IndexError, ConnectionError, ConnectionResetError):
 			print("error during unshorten url")
 			shorturl = None
 	cache = seen_urls.get(url)
