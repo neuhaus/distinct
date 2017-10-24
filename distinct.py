@@ -2,7 +2,7 @@
 
 '''
 	twitter deduplication bot.
-	Copyright (C) 2016 Sven Neuhaus
+	Copyright (C) 2016-2017 Sven Neuhaus
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU Affero General Public License as published
@@ -83,8 +83,10 @@ def main():
 	while(True):
 		try:
 			stream.filter(follow=[user.id_str])
-		except (ConnectionResetError):
+		except (ConnectionError, ConnectionResetError, AttributeError, UnicodeError, IndexError):
 			print("error during stream.filter")
+		except:
+			print("Unexpected error:", sys.exc_info()[0])
 		time.sleep(5)
 	# not reached
 	print("stream is done")
@@ -96,17 +98,22 @@ def handle_tweet(tweet):
 	global default
 	# make sure it's not a retweet
 	if tweet['user']['id_str'] != user.id_str:
-		print("ignoring retweet/response at %s" % tweet.get('created_at', 'unknown'))
+		# print("ignoring retweet/response at %s" % tweet.get('created_at', 'unknown'))
 		return
 	print("%s tweet = %s " % ( tweet.get('created_at', 'unknown'), tweet['text'] ))
-	#if tweet['entities']['urls'][0]['expanded_url']:
-	urlmatch = re.search("(?P<url>https?://[^\s]+)", tweet['text'])
-	if not urlmatch:
+	if not tweet['entities']['urls']: # empty list
 		api.retweet(tweet['id'])
 		print("tweet without URL retweeted")
 		return
+
+	#urlmatch = re.search("(?P<url>https?://[^\s]+)", tweet['text'])
+	#if not urlmatch:
+	#	api.retweet(tweet['id'])
+	#	print("tweet without URL retweeted")
+	#	return
+	#url = urlmatch.group("url")
 	purge_old_urls()
-	url = urlmatch.group("url")
+	url =  tweet['entities']['urls'][0]['url'];
 	shorturl = None
 	if default.getboolean('unshorten_url'):
 		shorturl = url
@@ -114,6 +121,9 @@ def handle_tweet(tweet):
 			url = unshorten_url(shorturl)
 		except (UnicodeError, IndexError, ConnectionError, ConnectionResetError):
 			print("error during unshorten url")
+			shorturl = None
+		except:
+			print("Unexpected error:", sys.exc_info()[0])
 			shorturl = None
 	cache = seen_urls.get(url)
 	if not cache:
@@ -146,7 +156,14 @@ def purge_old_urls():
 
 def unshorten_url(shorturl):
 	# unshortening URLs has privacy implications
-	return session.head(shorturl, allow_redirects=True).url
+	try:
+		long_url = session.head(shorturl, allow_redirects=True).url
+		return long_url
+	except (ConnectionError, ConnectionResetError):
+		return None
+	except:
+		print("Unexpected error:", sys.exc_info()[0])
+		return None
 
 main()
 
