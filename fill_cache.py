@@ -32,15 +32,15 @@ api = None
 session = None
 
 
-def cache_tweet_urls(cache_filename):
+def cache_tweet_urls(cache_filename, tweetcount):
 	tweets = 0
 	tweet_duplicate_url = 0
 	tweet_nourl = 0
 	""" Stores URLs found in past tweets in the cache """
 	seen_urls = shelve.open(filename=cache_filename, writeback=True)
-	statuses = api.user_timeline(id=user.id_str, count=10, include_rts=False)
+	statuses = api.user_timeline(id=user.id_str, count=tweetcount, include_rts=False)
 	for tweet in statuses:
-		print ("tweet = %s" % tweet)
+		print ("\n\ntweet = %s" % tweet)
 		tweets += 1
 		print("created at epoch %d" % int(tweet.created_at.timestamp()))
 		if not tweet.entities.get("urls"):
@@ -83,7 +83,7 @@ def main():
 	print("user " + default['follow_user'] + " id_str " + user.id_str)
 	global session
 	session = requests.Session()  # so connections are recycled
-	cache_tweet_urls('urlcache.' + default['follow_user'] + '.db') # e.g. "urlcache.wired.db"
+	cache_tweet_urls("urlcache.{}.db".format(default['follow_user']), 1500);
 
 
 main()
