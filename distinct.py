@@ -52,7 +52,7 @@ session = None
 seen_urls = None
 
 def main():
-	sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
+	#sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
 	config = configparser.ConfigParser()
 	if len(sys.argv) == 2: # alternate config file
 		config.read(sys.argv[1],encoding='utf8')
@@ -67,13 +67,13 @@ def main():
 	api = tweepy.API(auth)
 	stream = Stream(auth, l)
 
-	# print("follow_user = >%s<" % default['follow_user'])
+	#print("follow_user = >%s<" % default['follow_user'])
 	global user
 	user = api.get_user(default['follow_user'])
 	if not user:
 		print("Unknown user %s" % default['follow_user'])
 		exit(1)
-	print("user '%s id %d" % ( default['follow_user'], user.id))
+	print("user '%s' id %d" % ( default['follow_user'], user.id))
 	global seen_urls
 	seen_urls = shelve.open(
 		filename='urlcache.' + default['follow_user'] + '.db',
