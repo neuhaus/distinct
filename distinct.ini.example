@@ -1,26 +1,26 @@
 [DEFAULT]
-; copy this file to "distinct.ini", then edit it.
-; Need a consumer_key, consumer_secret, access_token etc? 
-; create a twitter account, then see 
-; http://adilmoujahid.com/posts/2014/07/twitter-analytics/
-consumer_key = secret
-consumer_secret = secret
-access_token = secret
-access_token_secret = secret
+# copy this file to "distinct.ini", then edit it.
+# Need a consumer_key, consumer_secret, access_token etc? 
+# Check the wiki setup page at
+# https://github.com/neuhaus/distinct/wiki/Setup-twitter-account
+consumer_key = your_consumer_key
+consumer_secret = your_consumer_secret
+access_token = your_access_token
+access_token_secret = your_access_token_secret
 
-follow_user = wired
-; follow_user = metaphorminute
+# change this to the twitter account you want to deduplicate
+follow_user = metaphorminute
 
-; unshortening URLs has some privacy implications
-; but can prevent duplicate unshortened URLs
+# unshortening URLs has some privacy implications
+# but can prevent duplicate unshortened URLs
 unshorten_url = yes
 
-; when do URLs in the cache expire? (in seconds)
-; 1 year = 365*24*60*60 = 31536000
+# when do URLs in the cache expire? (in seconds)
+# 1 year = 365*24*60*60 = 31536000
 url_expiration = 31536000
 
-; on average, search for old URLs in the cache every X tweets 
-; must be between 1 and bignum
+# on average, search for old URLs in the cache every X tweets 
+# must be between 1 and bignum
 url_purge_check = 20
 
-; eof. This file has not been truncate
+# eof. This file has not been truncate
