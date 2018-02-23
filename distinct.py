@@ -29,6 +29,7 @@ import shelve
 import re
 import time
 import requests
+import urllib.parse
 import random
 import sys
 import codecs
@@ -43,7 +44,8 @@ class StdOutListener(StreamListener):
         return True
 
     def on_error(self, status):
-        print(status)
+        # tipp: 401 errors can be caused by a wrong system clock
+        print("on_error: %s" % status)
 
 
 user = None
@@ -160,15 +162,32 @@ def purge_old_urls():
 
 def unshorten_url(shorturl):
     # unshortening URLs has privacy implications
+    # ignoring the Google UTM stuff when matching
     try:
-        long_url = session.head(shorturl, allow_redirects=True).url
+        session.cookies.clear()
+        long_url   = session.head(shorturl, allow_redirects=True).url
+        parsed_url = urllib.parse.urlparse(long_url)
+        qs_dict    = urllib.parse.parse(qs_(parsed_url.query))
+        if "utm_source" in qs_dict:
+            del qs_dict["utm_source"]
+        if "utm_medium" in qs_dict:
+            del qs_dict["utm_medium"]
+        if "utm_campaign" in qs_dict:
+            del qs_dict["utm_campaign"]
+        if "utm_term" in qs_dict:
+            del qs_dict["utm_term"]
+        if "utm_content" in qs_dict:
+            del qs_dict["utm_content"]
+        long_url = urllib.parse.urlunparse((parsed_url.scheme,
+            parsed_url.netloc, parsed_url.path, parsed_url.params,
+            urllib.parse.urlencode(a, True), parsed_url.fragment))
+
         return long_url
     except (ConnectionError, ConnectionResetError):
         return None
     except:
         print("Unexpected error:", sys.exc_info()[0])
         return None
-
 
 main()
 
