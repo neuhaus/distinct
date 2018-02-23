@@ -1,4 +1,5 @@
 # distinct
+So there's this twitter bot by a magazine you like but it posts stories over and over again? 
 This twitter bot will retweet someone's tweet only if that person hasn't tweeted 
 something with the same URL in the past. The name "distinct" was chosen for the SQL [SELECT DISTINCT](https://www.w3schools.com/Sql/sql_distinct.asp) statement.
 
@@ -15,6 +16,11 @@ Follow distinct bots instead of the original twitter accounts and enjoy duplicat
 4. Run `distinct.py`. It will keep running until its interrupted.
 
 To run multiple instances of the bot, give an extra parameter to both scripts to specify a different configuration file.
+
+## Example
+
+The twitter account [@wired_distinct](https://twitter.com/wired_distinct) is running this software, deduplicating
+tweets from the [@wired](https://twitter.com/wired) twitter account.
 
 * * *
 
