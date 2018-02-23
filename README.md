@@ -18,5 +18,5 @@ To run multiple instances of the bot, give an extra parameter to both scripts to
 
 * * *
 
-github icon image credit: Nick Royer CC-by-SA 2.0 https://flic.kr/p/gVo63P
+github icon image credit: Nick Royer "Space Marines: Into the Future" CC-by-SA 2.0 https://flic.kr/p/gVo63P
 

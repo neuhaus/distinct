@@ -2,7 +2,7 @@
 
 '''
     twitter deduplication bot.
-    Copyright (C) 2016-2017 Sven Neuhaus
+    Copyright (C) 2016-2018 Sven Neuhaus
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
