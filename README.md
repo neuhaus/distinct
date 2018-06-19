@@ -11,9 +11,11 @@ Follow distinct bots instead of the original twitter accounts and enjoy duplicat
 
 2. [Setup a twitter account](https://github.com/neuhaus/distinct/wiki/Setup-twitter-account) with API keys.
 
-3. Run `fill_cache.py` if you want to fill a URL cache with the URLs from past tweets.
+3. Run "sudo -H pip3 install tweepy" to install [tweepy](http://www.tweepy.org/) 3.6.0 (the currently recommended version).
 
-4. Run `distinct.py`. It will keep running until its interrupted.
+4. Run `fill_cache.py` if you want to fill a URL cache with the URLs from past tweets.
+
+5. Run `distinct.py`. It will keep running until its interrupted.
 
 To run multiple instances of the bot, give an extra parameter to both scripts to specify a different configuration file.
 
