@@ -11,7 +11,7 @@ Follow distinct bots instead of the original twitter accounts and enjoy duplicat
 
 2. [Setup a twitter account](https://github.com/neuhaus/distinct/wiki/Setup-twitter-account) with API keys.
 
-3. Run "sudo -H pip3 install tweepy" to install [tweepy](http://www.tweepy.org/) 3.6.0 (the currently recommended version).
+3. Run "sudo -H pip3 install tweepy" to install [tweepy](http://www.tweepy.org/) 3.6.0 (the currently recommended version). You also need the "requests" python module, install it as a pacakge (e.g. "apt install python-requests") or via "pip3 install requests"
 
 4. Run `fill_cache.py` if you want to fill a URL cache with the URLs from past tweets.
 
