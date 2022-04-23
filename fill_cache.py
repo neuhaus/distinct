@@ -26,6 +26,7 @@ import shelve
 import requests
 import sys
 import codecs
+import datetime
 
 user = None
 api = None
@@ -38,12 +39,12 @@ def cache_tweet_urls(cache_filename, tweetcount):
     tweet_nourl = 0
     """ Stores URLs found in past tweets in the cache """
     seen_urls = shelve.open(filename=cache_filename, writeback=True)
-    statuses = api.user_timeline(id=user.id_str, count=tweetcount,
+    statuses = api.user_timeline(user_id=user.id_str, count=tweetcount,
                                  include_rts=False)
     for tweet in statuses:
         print("\n\ntweet = %s" % tweet)
         tweets += 1
-        print("created at epoch %d" % int(tweet.created_at.timestamp()))
+        print("created at %s" % datetime.datetime.fromtimestamp(int(tweet.created_at.timestamp())))
         if not tweet.entities.get("urls"):
             tweet_nourl += 1
             continue
@@ -85,7 +86,7 @@ def main():
     global api
     api = tweepy.API(auth)
     global user
-    user = api.get_user(default['follow_user'])
+    user = api.get_user(screen_name=default['follow_user'])
     print("user " + default['follow_user'] + " id_str " + user.id_str)
     global session
     session = requests.Session()     # so connections are recycled

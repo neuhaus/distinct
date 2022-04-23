@@ -20,9 +20,7 @@
 '''
 
 import configparser
-from tweepy.streaming import StreamListener
 from tweepy import OAuthHandler
-from tweepy import Stream
 import tweepy
 import json
 import shelve
@@ -35,7 +33,7 @@ import sys
 import codecs
 
 
-class StdOutListener(StreamListener):
+class StdOutListener(tweepy.Stream):
 
     def on_data(self, data):
         tweet = json.loads(data)
@@ -64,18 +62,22 @@ def main():
         config.read('distinct.ini', encoding='utf8')
     global default
     default = config['DEFAULT']
-    listener = StdOutListener()
+    listener = StdOutListener(
+        default['consumer_key'], default['consumer_secret'],
+        default['access_token'], default['access_token_secret'])
     auth = OAuthHandler(default['consumer_key'],
                         default['consumer_secret'])
     auth.set_access_token(default['access_token'],
                           default['access_token_secret'])
     global api
     api = tweepy.API(auth)
-    stream = Stream(auth, listener)
+    stream = tweepy.Stream(
+        default['consumer_key'], default['consumer_secret'],
+        default['access_token'], default['access_token_secret'])
 
     # print("follow_user = >%s<" % default['follow_user'])
     global user
-    user = api.get_user(default['follow_user'])
+    user = api.get_user(screen_name=default['follow_user'])
     if not user:
         print("Unknown user %s" % default['follow_user'])
         exit(1)
