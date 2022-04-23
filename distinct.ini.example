@@ -1,8 +1,7 @@
 [DEFAULT]
 # copy this file to "distinct.ini", then edit it.
 # Need a consumer_key, consumer_secret, access_token etc? 
-# Check the wiki setup page at
-# https://github.com/neuhaus/distinct/wiki/Setup-twitter-account
+# Check the twitter setup document SETUP.md
 consumer_key = your_consumer_key
 consumer_secret = your_consumer_secret
 access_token = your_access_token
