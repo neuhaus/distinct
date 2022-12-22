@@ -1,5 +1,5 @@
 # distinct
-So there's this twitter bot by a magazine you like but it posts stories over and over again? 
+So there's this magazine's twitter account that you like but it posts stories over and over again? 
 This twitter bot will retweet someone's tweet only if that person hasn't tweeted 
 something with the same URL in the past. The name "distinct" was chosen for the SQL [SELECT DISTINCT](https://www.w3schools.com/Sql/sql_distinct.asp) statement.
 
