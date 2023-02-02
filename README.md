@@ -1,4 +1,7 @@
 # distinct
+
+⚠️ This project is **dead** with the [lack](https://twitter.com/TwitterDev/status/1621026986784337922) of free access to the twitter API! See you on Mastodon…
+
 So there's this magazine's twitter account that you like but it posts stories over and over again? 
 This twitter bot will retweet someone's tweet only if that person hasn't tweeted 
 something with the same URL in the past. The name "distinct" was chosen for the SQL [SELECT DISTINCT](https://www.w3schools.com/Sql/sql_distinct.asp) statement.
