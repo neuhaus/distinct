@@ -1,22 +1,20 @@
 # distinct
 
-⚠️ This project is **dead** with the [lack](https://twitter.com/TwitterDev/status/1621026986784337922) of free access to the twitter API! See you on Mastodon…
+So there's this magazine's Mastodon account that you like, but it rebogs stories over and over again? 
+This Mastodon bot will reblog someone's toot only if that person hasn't tooted something with the same 
+URL in the past. The name "distinct" was chosen for the SQL [SELECT DISTINCT](https://www.w3schools.com/Sql/sql_distinct.asp) statement.
 
-So there's this magazine's twitter account that you like but it posts stories over and over again? 
-This twitter bot will retweet someone's tweet only if that person hasn't tweeted 
-something with the same URL in the past. The name "distinct" was chosen for the SQL [SELECT DISTINCT](https://www.w3schools.com/Sql/sql_distinct.asp) statement.
-
-Follow distinct bots instead of the original twitter accounts and enjoy duplicate-free tweets!
+Follow distinct bots instead of the original Mastodon accounts and enjoy duplicate-free toots!
 
 ## Setup
 
 1. Copy `distinct.init.example` to `distinct.ini`. This is the configuration file.
 
-2. [Setup a twitter account](SETUP.md) with API keys.
+2. [Setup a Mastodon account](SETUP.md) with API keys.
 
-3. Run "sudo -H pip3 install tweepy" to install [tweepy](http://www.tweepy.org/) 4.8.0 (the currently recommended version). This should also install the "requests" python module, if not install it as a package (e.g. "apt install python-requests") or via "pip3 install requests"
+3. Run "sudo -H pip3 install Mastodon" to install [Mastodon.py]([http://www.tweepy.org/](https://pypi.org/project/Mastodon.py/)) 1.8.1 (the currently recommended version). This should also install the "requests" python module, if not install it as a package (e.g. "apt install python-requests") or via "pip3 install requests"
 
-4. Run `fill_cache.py` if you want to fill a URL cache with the URLs from past tweets.
+4. Run `fill_cache.py` if you want to fill a URL cache with the URLs from past toots.
 
 5. Run `distinct.py`. It will keep running until its interrupted.
 
@@ -24,8 +22,10 @@ To run multiple instances of the bot, give an extra parameter to both scripts to
 
 ## Example
 
-The twitter account [@wired_distinct](https://twitter.com/wired_distinct) is running this software, deduplicating
-tweets from the [@wired](https://twitter.com/wired) twitter account.
+The Mastodon account [@heise_distinct](https://botsin.space/heise_distinct) is running this software, deduplicating
+toots from the [@heise]((https://mastodon.social/@heiseonline) Mastodon account.
+
+The obsolete and unmaintained Twitter version is in the twitter branch for now.
 
 * * *
 
