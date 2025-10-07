@@ -1,7 +1,7 @@
 # distinct
 
-So there's this magazine's Mastodon account that you like, but it rebogs stories over and over again? 
-This Mastodon bot will reblog someone's toot only if that person hasn't tooted something with the same 
+So there's this magazine's Mastodon account that you like, but it reposts stories over and over again? 
+This Mastodon bot will boost someone's toot only if that person hasn't tooted something with the same 
 URL in the past. The name "distinct" was chosen for the SQL [SELECT DISTINCT](https://www.w3schools.com/Sql/sql_distinct.asp) statement.
 
 Follow distinct bots instead of the original Mastodon accounts and enjoy duplicate-free toots!
