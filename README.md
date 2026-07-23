@@ -22,8 +22,7 @@ To run multiple instances of the bot, give an extra parameter to both scripts to
 
 ## Example
 
-The Mastodon account [@heise_distinct](https://botsin.space/heise_distinct) is running this software, deduplicating
-toots from the [@heise]((https://mastodon.social/@heiseonline) Mastodon account.
+None currently running. <https://social.heise.de/@ct_Magazin> is a good candidate.
 
 The obsolete and unmaintained Twitter version is in the twitter branch for now.
 
